@@ -4,10 +4,11 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import mysql.connector
 
 conexao = mysql.connector.connect(
-    host="localhost",
+    host="mysql.railway.internal",
     user="root",
-    password="",   # se seu MySQL não tem senha
-    database="linkserv"
+    password="UCoYkwmuNjHwmavAsIPZHbeFXiZdUWoC",
+    database="railway",
+    port=3306
 )
 
 cursor = conexao.cursor(dictionary=True)
