@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Login</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f2f4f8;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .login-container {
+      background: white;
+      width: 380px;
+      padding: 35px;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.12);
+      text-align: center;
+    }
+
+    .login-container h1 {
+      margin-bottom: 10px;
+      color: #1f2937;
+    }
+
+    .login-container p {
+      color: #6b7280;
+      margin-bottom: 25px;
+    }
+
+    .login-container input {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 15px;
+      box-sizing: border-box;
+    }
+
+    .login-container button {
+      width: 100%;
+      padding: 12px;
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .login-container button:hover {
+      background: #1d4ed8;
+    }
+
+    #mensagem {
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
+    .cadastro-link {
+      margin-top: 20px;
+      font-size: 14px;
+    }
+
+    .cadastro-link a {
+      color: #2563eb;
+      text-decoration: none;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="login-container">
+    <h1>Entrar</h1>
+    <p>Faça login para acessar o sistema</p>
+
+    <form id="formLogin">
+      <input type="email" id="email" placeholder="Email" required>
+
+      <input type="password" id="senha" placeholder="Senha" required>
+
+      <button type="submit">Entrar</button>
+    </form>
+
+    <p id="mensagem"></p>
+
+    <div class="cadastro-link">
+      Não possui conta? <a href="cadastro.html">Criar conta</a>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById("formLogin");
+    const mensagem = document.getElementById("mensagem");
+
+    form.addEventListener("submit", async function(event) {
+      event.preventDefault();
+
+      const email = document.getElementById("email").value;
+      const senha = document.getElementById("senha").value;
+
+      const resposta = await fetch("http://localhost:5000/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          email: email,
+          senha: senha
+        })
+      });
+
+const dados = await resposta.json();
+
+if (resposta.ok) {
+  localStorage.setItem("usuarioLogado", "true");
+  localStorage.setItem("usuario", JSON.stringify(dados.usuario));
+
+  mensagem.style.color = "green";
+  mensagem.textContent = "Login realizado com sucesso!";
+
+  setTimeout(() => {
+    window.location.href = "index.html";
+  }, 1000);
+} else {
+  mensagem.style.color = "red";
+  mensagem.textContent = dados.erro;
+}
+    });
+  </script>
+
+</body>
+</html>

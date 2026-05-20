@@ -1,0 +1,740 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>LinkServ — Projetos e Estruturas</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fraunces:ital,wght@0,700;0,900;1,700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f5f4f0;--bg2:#eceae4;--white:#fff;
+  --dark:#0f0e0c;--dark2:#1a1916;
+  --mid:#4a4740;--muted:#8c8880;--border:#dedad3;
+  --accent:#ff4d00;--accent-light:#fff1ec;
+  --accent2:#1a6b3c;--accent2-light:#e8f5ee;
+  --gold:#f5a623;
+}
+html,body{min-height:100%;background:var(--bg);color:var(--dark);font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;line-height:1.5}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg2)}::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+
+/* SCREENS */
+.screen{position:fixed;inset:0;overflow-y:auto;transition:opacity .38s ease,transform .38s ease;z-index:1}
+.screen.hidden{opacity:0;pointer-events:none;transform:translateY(18px)}
+
+/* ─── TOPBAR ─── */
+.topbar{position:sticky;top:0;z-index:100;background:rgba(245,244,240,.95);backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
+.topbar-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:14px 32px;gap:16px}
+.logo{font-family:'Fraunces',serif;font-weight:900;font-size:1.4rem;color:var(--dark);text-decoration:none;white-space:nowrap}
+.logo span{color:var(--accent)}
+.topbar-actions{display:flex;align-items:center;gap:10px}
+.btn-sm{padding:9px 22px;border-radius:100px;font-family:inherit;font-size:0.82rem;font-weight:700;cursor:pointer;border:none;transition:all .18s;white-space:nowrap}
+.btn-ghost{background:transparent;border:1.5px solid var(--border);color:var(--mid)}
+.btn-ghost:hover{border-color:var(--dark);color:var(--dark)}
+.btn-main{background:var(--accent);color:#fff}
+.btn-main:hover{background:#e04400;transform:translateY(-1px)}
+
+/* ─── HERO ─── */
+.hero{background:var(--dark2);padding:72px 32px 60px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 55% 70% at 50% 110%,rgba(255,77,0,.2),transparent);pointer-events:none}
+.hero::after{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:44px 44px;pointer-events:none}
+.hero-inner{position:relative;z-index:1;max-width:640px;margin:0 auto}
+.hero-pill{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);padding:5px 15px;border-radius:100px;font-size:0.75rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;margin-bottom:22px;color:rgba(255,255,255,.7)}
+.hero-pill::before{content:'';width:6px;height:6px;background:#4ade80;border-radius:50%;animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.hero h1{font-family:'Fraunces',serif;font-size:clamp(2rem,5vw,3.2rem);font-weight:900;line-height:1.1;letter-spacing:-.03em;color:#fff;margin-bottom:14px}
+.hero h1 em{font-style:italic;color:var(--accent)}
+.hero p{font-size:.97rem;color:rgba(255,255,255,.5);max-width:480px;margin:0 auto 40px;line-height:1.65}
+.hero-stats{display:flex;justify-content:center;gap:44px;flex-wrap:wrap;border-top:1px solid rgba(255,255,255,.07);padding-top:30px}
+.stat .n{font-family:'Fraunces',serif;font-size:1.75rem;font-weight:700;color:#fff;display:block}
+.stat .l{font-size:0.72rem;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.07em}
+
+/* ─── MAIN WRAPPER ─── */
+.main{max-width:1100px;margin:0 auto;padding:44px 32px 88px}
+
+/* ─── SECTION LABEL ─── */
+.sec-head{margin-bottom:20px}
+.sec-head h2{font-family:'Fraunces',serif;font-size:1.45rem;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
+.sec-head p{font-size:.85rem;color:var(--muted)}
+
+/* ─── SERVICE GRID (exactly 9) ─── */
+.service-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:14px;
+  margin-bottom:10px;
+}
+@media(max-width:700px){.service-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:430px){.service-grid{grid-template-columns:1fr}}
+
+.svc-card{
+  background:var(--white);border:2px solid var(--border);
+  border-radius:16px;padding:26px 20px;cursor:pointer;
+  transition:all .2s;display:flex;flex-direction:column;gap:12px;
+  position:relative;
+}
+.svc-card:hover{border-color:rgba(255,77,0,.35);box-shadow:0 4px 22px rgba(255,77,0,.09);transform:translateY(-2px)}
+.svc-card.selected{border-color:var(--accent);background:var(--accent-light);box-shadow:0 4px 26px rgba(255,77,0,.15)}
+.svc-card.selected::after{content:'✓';position:absolute;top:12px;right:14px;width:22px;height:22px;background:var(--accent);color:#fff;border-radius:50%;font-size:.72rem;font-weight:800;display:grid;place-items:center}
+.svc-icon{font-size:2rem;line-height:1}
+.svc-name{font-size:.92rem;font-weight:700;color:var(--dark);line-height:1.3}
+.svc-desc{font-size:.76rem;color:var(--muted);line-height:1.45}
+
+.svc-err{font-size:.8rem;color:#e03e3e;display:none;margin:6px 0 20px;padding:10px 14px;background:#fff5f5;border-radius:8px;border-left:3px solid #e03e3e}
+
+/* ─── FORM ─── */
+.form-section{background:var(--white);border:1px solid var(--border);border-radius:20px;padding:34px;margin-bottom:18px}
+.form-title{font-size:.74rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:24px;display:flex;align-items:center;gap:10px}
+.form-title span{width:22px;height:22px;background:var(--dark);color:#fff;border-radius:50%;display:grid;place-items:center;font-size:.7rem;font-weight:800}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:540px){.form-row{grid-template-columns:1fr}}
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
+.field:last-child{margin-bottom:0}
+label{font-size:.8rem;font-weight:600;color:var(--mid)}
+input,select,textarea{background:var(--bg);border:1.5px solid var(--border);border-radius:10px;padding:12px 14px;font-family:inherit;font-size:.9rem;color:var(--dark);outline:none;transition:border-color .2s,background .2s;width:100%;appearance:none}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);background:#fff}
+input::placeholder,textarea::placeholder{color:var(--muted)}
+select option{background:#fff}
+textarea{resize:vertical;min-height:88px}
+.err-msg{font-size:.74rem;color:#e03e3e;display:none;margin-top:2px}
+.field.invalid input,.field.invalid select,.field.invalid textarea{border-color:#e03e3e}
+.field.invalid .err-msg{display:block}
+
+.submit-row{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;padding-top:6px}
+.submit-note{font-size:.78rem;color:var(--muted);max-width:320px;line-height:1.55}
+.btn-submit{padding:15px 38px;background:var(--accent);color:#fff;font-family:inherit;font-size:.95rem;font-weight:800;border:none;border-radius:12px;cursor:pointer;transition:all .2s}
+.btn-submit:hover{background:#e04400;transform:translateY(-2px);box-shadow:0 8px 26px rgba(255,77,0,.28)}
+
+/* ─── SCREEN 2 ─── */
+#screen2 .topbar-inner{justify-content:flex-start;gap:20px}
+.back-btn{display:flex;align-items:center;gap:7px;background:none;border:none;font-family:inherit;font-size:.88rem;font-weight:600;color:var(--mid);cursor:pointer;transition:color .18s;padding:0}
+.back-btn:hover{color:var(--dark)}
+
+.result-hero{background:var(--dark2);padding:42px 32px}
+.result-hero-inner{max-width:1100px;margin:0 auto}
+.breadcrumb{font-size:.76rem;color:rgba(255,255,255,.3);margin-bottom:12px;display:flex;align-items:center;gap:7px}
+.result-hero h2{font-family:'Fraunces',serif;font-size:clamp(1.5rem,3.5vw,2.2rem);font-weight:900;color:#fff;letter-spacing:-.025em;margin-bottom:7px}
+.result-hero p{font-size:.88rem;color:rgba(255,255,255,.45)}
+
+/* CLIENT SUMMARY */
+.client-card{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:22px 26px;margin:28px 0;display:flex;flex-wrap:wrap;gap:22px}
+.cf{flex:1;min-width:120px}
+.cf .lbl{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:3px}
+.cf .val{font-weight:700;font-size:.9rem;color:var(--dark)}
+
+/* COMPANY CARDS */
+.company-list{display:flex;flex-direction:column;gap:18px}
+.co-card{background:var(--white);border:1px solid var(--border);border-radius:20px;overflow:hidden;transition:box-shadow .22s,border-color .22s}
+.co-card:hover{box-shadow:0 8px 40px rgba(15,14,12,.11);border-color:rgba(255,77,0,.18)}
+
+.co-card.rank-1 .co-header{background:linear-gradient(135deg,#fffbe8,#fff5cc)}
+.co-card.rank-2 .co-header{background:linear-gradient(135deg,#f5f5f5,#ebebeb)}
+.co-card.rank-3 .co-header{background:linear-gradient(135deg,#fff3ec,#ffe8d6)}
+
+.rank-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:100px;font-size:.72rem;font-weight:800;letter-spacing:.04em;margin-bottom:14px}
+.rank-1 .rank-badge{background:var(--gold);color:#fff}
+.rank-2 .rank-badge{background:#888;color:#fff}
+.rank-3 .rank-badge{background:#cd7f32;color:#fff}
+
+.co-header{padding:24px 28px 20px;border-bottom:1px solid var(--border)}
+.co-top{display:flex;align-items:flex-start;gap:18px}
+.co-logo{width:58px;height:58px;border-radius:13px;background:var(--dark);display:grid;place-items:center;font-size:1.55rem;flex-shrink:0}
+.co-meta .co-name{font-family:'Fraunces',serif;font-size:1.18rem;font-weight:700;margin-bottom:3px}
+.co-meta .co-spec{font-size:.82rem;color:var(--accent);font-weight:600}
+.co-meta .co-since{font-size:.76rem;color:var(--muted);margin-top:3px}
+
+/* RATING */
+.rating-row{display:flex;align-items:flex-start;gap:28px;margin-top:16px;padding-top:16px;border-top:1px solid var(--border);flex-wrap:wrap}
+.stars-wrap{display:flex;gap:2px}
+.star{font-size:1.05rem;color:#ddd;position:relative;display:inline-block}
+.star.full{color:var(--gold)}
+.star.half::before{content:'★';position:absolute;left:0;top:0;color:var(--gold);width:50%;overflow:hidden;display:inline-block}
+.r-num{font-family:'Fraunces',serif;font-size:1.45rem;font-weight:700;color:var(--dark)}
+.r-count{font-size:.77rem;color:var(--muted);margin-top:2px}
+.bar-group{flex:1;min-width:150px}
+.bar-row{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+.bar-lbl{font-size:.68rem;color:var(--muted);width:28px;text-align:right}
+.bar-track{flex:1;height:6px;background:var(--bg2);border-radius:3px;overflow:hidden}
+.bar-fill{height:100%;background:var(--gold);border-radius:3px}
+.bar-pct{font-size:.67rem;color:var(--muted);width:26px}
+.badges{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.badge{display:inline-flex;align-items:center;padding:4px 10px;border-radius:100px;font-size:.71rem;font-weight:600}
+.g{background:var(--accent2-light);color:var(--accent2)}
+.b{background:#e8f0ff;color:#2b5cd9}
+.o{background:var(--accent-light);color:var(--accent)}
+
+/* CONTACTS */
+.co-contacts{padding:18px 28px;display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+.contact-item{display:flex;align-items:center;gap:11px;padding:11px 14px;border:1px solid var(--border);border-radius:10px;background:var(--bg);transition:border-color .18s}
+.contact-item:hover{border-color:var(--muted)}
+.c-icon{width:34px;height:34px;border-radius:8px;background:var(--dark);display:grid;place-items:center;font-size:.95rem;flex-shrink:0}
+.c-lbl{font-size:.69rem;color:var(--muted);margin-bottom:2px}
+.c-val{font-size:.83rem;font-weight:600;color:var(--dark)}
+.c-val a{color:var(--dark);text-decoration:none}
+.c-val a:hover{color:var(--accent)}
+
+.co-footer{padding:18px 28px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;background:var(--bg)}
+.co-footer p{font-size:.82rem;color:var(--muted);max-width:480px;line-height:1.6}
+.cta-wrap{display:flex;gap:10px;flex-wrap:wrap}
+.btn-cta{display:inline-flex;align-items:center;gap:7px;padding:12px 22px;background:var(--accent);color:#fff;font-family:inherit;font-size:.87rem;font-weight:800;border-radius:10px;text-decoration:none;border:none;cursor:pointer;transition:all .18s;white-space:nowrap}
+.btn-cta:hover{background:#e04400;transform:translateY(-1px);box-shadow:0 5px 18px rgba(255,77,0,.28)}
+.btn-cta.ghost{background:transparent;border:1.5px solid var(--border);color:var(--mid)}
+.btn-cta.ghost:hover{border-color:var(--dark);color:var(--dark);background:var(--white);box-shadow:none}
+
+@media(max-width:640px){
+  .topbar-inner{padding:14px 20px}
+  .main{padding:32px 20px 72px}
+  .co-contacts{grid-template-columns:1fr}
+  .co-footer{flex-direction:column;align-items:flex-start}
+  .hero-stats{gap:24px}
+}
+</style>
+</head>
+<body>
+
+<div class="screen" id="screen1">
+
+  <div class="topbar">
+    <div class="topbar-inner">
+      <a class="logo" href="#">Link<span>Serv</span></a>
+      <div class="topbar-actions">
+        <button class="btn-sm btn-ghost" onclick="scrollToForm()">Já sei o serviço</button>
+        <button class="btn-sm btn-main" onclick="scrollToForm()">Cadastrar projeto</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero">
+    <div class="hero-inner">
+      <div class="hero-pill">🏗️ Intermediação técnica em engenharia</div>
+      <h1>Conectamos seu projeto ao <em>escritório certo</em></h1>
+      <p>Plataforma especializada em projetos de engenharia e estruturas. Intermediamos clientes e escritórios verificados com base em avaliações técnicas reais.</p>
+      <div class="hero-stats">
+        <div class="stat"><span class="n">9</span><span class="l">Especialidades</span></div>
+        <div class="stat"><span class="n">340+</span><span class="l">Escritórios</span></div>
+        <div class="stat"><span class="n">8.500+</span><span class="l">Projetos entregues</span></div>
+        <div class="stat"><span class="n">4.9★</span><span class="l">Avaliação média</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="sec-head">
+      <h2 style="display: flex; align-items: center; gap: 10px;">
+        <span style="width: 28px; height: 28px; background: var(--dark); color: #fff; border-radius: 50%; display: grid; place-items: center; font-size: 1rem; font-weight: 800; font-family: 'Plus Jakarta Sans', sans-serif; letter-spacing: normal;">1</span>
+        Projetos e Estruturas
+      </h2>
+      <p>Selecione a especialidade do seu projeto</p>
+    </div>
+
+    <div class="service-grid" id="service-grid"></div>
+    <div class="svc-err" id="svc-err">⚠️ Selecione a especialidade do seu projeto para continuar.</div>
+
+    <div id="form-anchor" style="padding-top:40px"></div>
+
+    <div class="form-section">
+      <div class="form-title"><span>2</span> Informações da obra / projeto</div>
+      <div class="field" id="f-end">
+        <label>Localização da obra *</label>
+        <input type="text" id="end" placeholder="Cidade, bairro ou endereço — UF"/>
+        <span class="err-msg">Campo obrigatório</span>
+      </div>
+      <div class="form-row">
+        <div class="field">
+          <label>Tipo de edificação</label>
+          <select id="tipo">
+            <option value="">Selecione</option>
+            <option>Residencial (casa / sobrado)</option>
+            <option>Residencial multifamiliar (condomínio)</option>
+            <option>Comercial (loja / escritório)</option>
+            <option>Industrial / Galpão</option>
+            <option>Institucional (escola / hospital)</option>
+            <option>Retrofit / Reforma estrutural</option>
+            <option>Outro</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Área estimada</label>
+          <select id="area">
+            <option value="">Selecione</option>
+            <option>Até 100 m²</option>
+            <option>100 – 500 m²</option>
+            <option>500 – 2.000 m²</option>
+            <option>2.000 – 10.000 m²</option>
+            <option>Acima de 10.000 m²</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="field">
+          <label>Prazo desejado</label>
+          <select id="prazo">
+            <option value="">Selecione</option>
+            <option>Urgente (até 2 semanas)</option>
+            <option>1 – 2 meses</option>
+            <option>2 – 6 meses</option>
+            <option>Acima de 6 meses</option>
+            <option>Sem prazo definido</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Faixa de investimento no projeto</label>
+          <select id="budget">
+            <option value="">Selecione</option>
+            <option>Até R$ 5.000</option>
+            <option>R$ 5.000 – R$ 20.000</option>
+            <option>R$ 20.000 – R$ 100.000</option>
+            <option>R$ 100.000 – R$ 500.000</option>
+            <option>Acima de R$ 500.000</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label>Descrição técnica do projeto</label>
+        <textarea id="desc" placeholder="Descreva o escopo, normas aplicáveis, condições do terreno, situação atual da estrutura..."></textarea>
+      </div>
+    </div>
+
+    <div class="submit-row">
+      <p class="submit-note">Seus dados são usados exclusivamente para conectar você ao escritório. Não compartilhamos informações com terceiros.</p>
+      <button class="btn-submit" onclick="handleSubmit()">Encontrar escritório especializado →</button>
+    </div>
+  </div>
+</div>
+
+<div class="screen hidden" id="screen2">
+  <div class="topbar">
+    <div class="topbar-inner">
+      <button class="back-btn" onclick="goBack()">← Voltar</button>
+      <a class="logo" href="#">Link<span>Serv</span></a>
+    </div>
+  </div>
+
+  <div class="result-hero">
+    <div class="result-hero-inner">
+      <div class="breadcrumb">Início <span>›</span> Projetos e Estruturas <span>›</span> Resultados</div>
+      <h2 id="r-title">Escritórios recomendados</h2>
+      <p id="r-sub">Rankeados por avaliação técnica e histórico de clientes</p>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="client-card" id="client-card"></div>
+    <div style="margin-bottom:20px">
+      <h2 style="font-family:'Fraunces',serif;font-size:1.4rem;font-weight:700;letter-spacing:-.02em;margin-bottom:4px" id="co-title">Ranking de escritórios</h2>
+      <p style="font-size:.84rem;color:var(--muted)">Avaliado por clientes reais da plataforma LinkServ</p>
+    </div>
+    <div class="company-list" id="co-list"></div>
+  </div>
+</div>
+
+<script>
+    if (localStorage.getItem("usuarioLogado") !== "true") {
+  window.location.href = "login.html";
+}
+// ─── SERVIÇOS (exatamente os 9 do escopo) ──────────────────
+const SERVICES = [
+  {
+    id: 'estrutural',
+    icon: '🏗️',
+    name: 'Engenharia Estrutural',
+    desc: 'Cálculo e projeto de estruturas em concreto, metálicas e mistas',
+  },
+  {
+    id: 'fundacoes',
+    icon: '⚓',
+    name: 'Fundações & Sondagem',
+    desc: 'Projetos de fundações, sondagem SPT e geotecnia',
+  },
+  {
+    id: 'topografia',
+    icon: '🗺️',
+    name: 'Topografia',
+    desc: 'Levantamento planialtimétrico, locação de obras e estaqueamento',
+  },
+  {
+    id: 'arquitetonico',
+    icon: '🏛️',
+    name: 'Projeto Arquitetônico',
+    desc: 'Projetos de arquitetura, aprovação em prefeitura e executivo',
+  },
+  {
+    id: 'laudos',
+    icon: '📋',
+    name: 'Laudos Técnicos',
+    desc: 'Laudos estruturais, periciais e inspeções de edificações',
+  },
+  {
+    id: 'impermeab',
+    icon: '💧',
+    name: 'Impermeabilização',
+    desc: 'Projetos e execução de impermeabilização de lajes, subsolos e reservatórios',
+  },
+  {
+    id: 'fachada',
+    icon: '🏢',
+    name: 'Reforma de Fachada',
+    desc: 'Recuperação, revestimento e requalificação de fachadas',
+  },
+  {
+    id: 'telhado',
+    icon: '🏠',
+    name: 'Telhados & Coberturas',
+    desc: 'Projeto e execução de estruturas de cobertura e telhas',
+  },
+  {
+    id: 'serralheria',
+    icon: '🔩',
+    name: 'Serralheria & Esquadrias',
+    desc: 'Projetos e instalação de esquadrias, guarda-corpos e estruturas metálicas',
+  },
+];
+
+// ─── EMPRESAS POR SERVIÇO ───────────────────────────────────
+const COMPANIES = {
+  estrutural: [
+    {
+      name: 'EstruturaPro Engenharia',
+      logo: '🏗️',
+      spec: 'Projetos Estruturais • Concreto Armado • Estruturas Metálicas',
+      since: 2001,
+      rating: 5.0,
+      reviews: 94,
+      dist: [82,14,3,1,0],
+      badges: [['g','CREA credenciado'],['b','23+ anos de mercado'],['o','Nota máxima']],
+      contacts: [
+        {icon:'📞',lbl:'Telefone',val:'(11) 3311-9900'},
+        {icon:'💬',lbl:'WhatsApp',val:'(11) 95544-3322'},
+        {icon:'📧',lbl:'E-mail',val:'eng@estruturapro.com.br'},
+        {icon:'🌐',lbl:'Site',val:'estruturapro.com.br',url:'https://estruturapro.com.br'},
+      ],
+      desc: 'Referência em projetos estruturais para edificações de todos os portes. Equipe de engenheiros CREA com especialização em concreto armado, estruturas metálicas e reforço estrutural. Entrega de projeto executivo completo com ART.',
+      cta: 'Solicitar proposta', ctaUrl: 'https://estruturapro.com.br',
+      cta2: 'WhatsApp', cta2Url: 'https://wa.me/5511955443322',
+    },
+    {
+      name: 'ConcreTech Projetos',
+      logo: '🧱',
+      spec: 'Concreto Armado • Pré-fabricados • Modelagem BIM',
+      since: 2008,
+      rating: 4.7,
+      reviews: 163,
+      dist: [60,26,9,3,2],
+      badges: [['g','Certificado ISO 9001'],['b','BIM nível 2']],
+      contacts: [
+        {icon:'📞',lbl:'Telefone',val:'(11) 4422-8800'},
+        {icon:'💬',lbl:'WhatsApp',val:'(11) 97788-9900'},
+        {icon:'📧',lbl:'E-mail',val:'projetos@concretech.com.br'},
+      ],
+      desc: 'Especialistas em estruturas de concreto armado e pré-moldados para galpões industriais, edifícios multifamiliares e infraestrutura. Todos os projetos entregues em BIM 3D.',
+      cta: 'Ver portfólio', ctaUrl: 'https://wa.me/5511977889900',
+    },
+  ],
+  fundacoes: [
+    {
+      name: 'GeoBase Fundações',
+      logo: '⚓',
+      spec: 'Fundações Especiais • Sondagem SPT • Geotecnia',
+      since: 2003,
+      rating: 4.8,
+      reviews: 198,
+      dist: [66,22,8,3,1],
+      badges: [['g','CREA SP/RJ'],['b','Laudos em 72h'],['o','+1.000 projetos']],
+      contacts: [
+        {icon:'📞',lbl:'Telefone',val:'(11) 3388-4455'},
+        {icon:'💬',lbl:'WhatsApp',val:'(11) 94455-6677'},
+        {icon:'📧',lbl:'E-mail',val:'geobase@geobase.com.br'},
+        {icon:'🌐',lbl:'Site',val:'geobase.com.br',url:'https://geobase.com.br'},
+      ],
+      desc: 'Empresa referência em fundações especiais, sondagem SPT/CPT e estudos geotécnicos. Projetos de estacas, sapatas, radiers e contenção de encostas para todos os tipos de terreno e edificação.',
+      cta: 'Solicitar sondagem', ctaUrl: 'https://geobase.com.br',
+      cta2: 'WhatsApp', cta2Url: 'https://wa.me/5511944556677',
+    },
+  ],
+  topografia: [
+    {
+      name: 'TopoPrecision Levantamentos',
+      logo: '🗺️',
+      spec: 'Topografia • Georreferenciamento • Drones',
+      since: 2009,
+      rating: 4.8,
+      reviews: 141,
+      dist: [65,23,8,3,1],
+      badges: [['g','CREA credenciado'],['b','Drone certificado ANAC'],['o','Entrega em 5 dias']],
+      contacts: [
+        {icon:'📞',lbl:'Telefone',val:'(11) 3366-1122'},
+        {icon:'💬',lbl:'WhatsApp',val:'(11) 96677-2233'},
+        {icon:'📧',lbl:'E-mail',val:'topo@topoprecision.com.br'},
+      ],
+      desc: 'Levantamentos planialtimétricos, georreferenciamento de imóveis e locação de obras com equipamentos de precisão (estação total, GNSS RTK) e drones certificados pela ANAC.',
+      cta: 'Solicitar levantamento', ctaUrl: 'https://wa.me/5511966772233',
+    },
+  ],
+  arquitetonico: [
+    {
+      name: 'Ateliê Forma Arquitetura',
+      logo: '🏛️',
+      spec: 'Projetos Arquitetônicos • Aprovação em Prefeitura • BIM',
+      since: 2012,
+      rating: 4.9,
+      reviews: 287,
+      dist: [74,18,5,2,1],
+      badges: [['g','CAU registrado'],['b','Premiado IAB 2023'],['o','BIM Level 3']],
+      contacts: [
+        {icon:'📞',lbl:'Telefone',val:'(11) 3366-7722'},
+        {icon:'💬',lbl:'WhatsApp',val:'(11) 96677-8899'},
+        {icon:'📧',lbl:'E-mail',val:'contato@atelieforma.com.br'},
+        {icon:'🌐',lbl:'Site',val:'atelieforma.com.br',url:'https://atelieforma.com.br'},
+      ],
+      desc: 'Escritório premiado com foco em projetos residenciais de alto padrão e edifícios comerciais. Entrega completa com projeto executivo, aprovação na prefeitura e memorial descritivo.',
+      cta: 'Ver portfólio', ctaUrl: 'https://atelieforma.com.br',
+      cta2: 'WhatsApp', cta2Url: 'https://wa.me/5511966778899',
+    },
+  ],
+  laudos: [
+    {
+      name: 'Perícia Técnica Engenharia',
+      logo: '🔎',
+      spec: 'Laudos Estruturais • Perícias • Inspeção Predial',
+      since: 2006,
+      rating: 4.9,
+      reviews: 321,
+      dist: [73,19,5,2,1],
+      badges: [['g','IBAPE credenciado'],['b','Aceito em juízo'],['o','Resposta em 48h']],
+      contacts: [
+        {icon:'📞',lbl:'Telefone',val:'(11) 3300-5566'},
+        {icon:'💬',lbl:'WhatsApp',val:'(11) 93366-5544'},
+        {icon:'📧',lbl:'E-mail',val:'laudos@pericia-tec.com.br'},
+        {icon:'🌐',lbl:'Site',val:'pericia-tec.com.br',url:'https://pericia-tec.com.br'},
+      ],
+      desc: 'Especialistas em laudos periciais, inspeções prediais e relatórios técnicos com validade judicial. Credenciados pelo IBAPE/SP. Atendimento em até 48h após solicitação.',
+      cta: 'Solicitar laudo', ctaUrl: 'https://pericia-tec.com.br',
+      cta2: 'WhatsApp', cta2Url: 'https://wa.me/5511933665544',
+    },
+  ],
+  impermeab: [
+    {
+      name: 'AquaShield Impermeabilização',
+      logo: '💧',
+      spec: 'Impermeabilização • Recuperação de Estruturas',
+      since: 2007,
+      rating: 4.7,
+      reviews: 229,
+      dist: [61,24,10,3,2],
+      badges: [['g','Garantia por escrito'],['b','Manta, cristal e poliurea'],['o','Laudos fotográficos']],
+      contacts: [
+        {icon:'📞',lbl:'Telefone',val:'(11) 4411-9933'},
+        {icon:'💬',lbl:'WhatsApp',val:'(11) 95566-7788'},
+        {icon:'📧',lbl:'E-mail',val:'orcamento@aquashield.com.br'},
+      ],
+      desc: 'Projetos e execução de impermeabilização de lajes, subsolos, coberturas e reservatórios. Utilização de manta asfáltica, cristalização e poliurea. Garantia de 5 anos por escrito.',
+      cta: 'Solicitar vistoria', ctaUrl: 'https://wa.me/5511955667788',
+    },
+  ],
+  fachada: [
+    {
+      name: 'FachadaTech Recuperação',
+      logo: '🏢',
+      spec: 'Fachadas • Revestimentos • Patologia',
+      since: 2010,
+      rating: 4.8,
+      reviews: 176,
+      dist: [65,23,8,3,1],
+      badges: [['g','Laudo de patologia incluso'],['b','Rapel e andaime'],['o','Antes e depois documentado']],
+      contacts: [
+        {icon:'📞',lbl:'Telefone',val:'(11) 3388-6644'},
+        {icon:'💬',lbl:'WhatsApp',val:'(11) 94433-5566'},
+        {icon:'📧',lbl:'E-mail',val:'fachada@fachadatech.com.br'},
+      ],
+      desc: 'Recuperação e requalificação de fachadas com diagnóstico de patologias, projeto de revestimento e execução. Equipe especializada em trabalho em altura com NR-35.',
+      cta: 'Solicitar diagnóstico', ctaUrl: 'https://wa.me/5511944335566',
+    },
+  ],
+  telhado: [
+    {
+      name: 'CoberturaPro Estruturas',
+      logo: '🏠',
+      spec: 'Telhados • Coberturas Metálicas • Calhas',
+      since: 2005,
+      rating: 4.7,
+      reviews: 312,
+      dist: [60,26,9,4,1],
+      badges: [['g','Projeto estrutural incluso'],['b','Todas as telhas'],['o','+300 obras entregues']],
+      contacts: [
+        {icon:'📞',lbl:'Telefone',val:'(11) 2244-7755'},
+        {icon:'💬',lbl:'WhatsApp',val:'(11) 97799-8866'},
+        {icon:'📧',lbl:'E-mail',val:'cobertura@coberturapro.com.br'},
+      ],
+      desc: 'Projetos e execução de estruturas de cobertura em madeira e metálica, telhados em cerâmica, metálicos e shingle. Inclui projeto estrutural, calhas e rufos.',
+      cta: 'Solicitar orçamento', ctaUrl: 'https://wa.me/5511977998866',
+    },
+  ],
+  serralheria: [
+    {
+      name: 'MetalForm Esquadrias',
+      logo: '🔩',
+      spec: 'Esquadrias • Guarda-corpos • Estruturas Metálicas',
+      since: 2011,
+      rating: 4.6,
+      reviews: 188,
+      dist: [58,25,11,4,2],
+      badges: [['g','NBR 10821 e NBR 16698'],['b','Alumínio, aço e vidro'],['o','Projetos sob medida']],
+      contacts: [
+        {icon:'📞',lbl:'Telefone',val:'(11) 3355-4422'},
+        {icon:'💬',lbl:'WhatsApp',val:'(11) 96644-5533'},
+        {icon:'📧',lbl:'E-mail',val:'metalform@metalform.com.br'},
+      ],
+      desc: 'Fabricação e instalação de esquadrias de alumínio e aço, guarda-corpos, coberturas metálicas e gradis. Projetos personalizados com conformidade às normas ABNT.',
+      cta: 'Solicitar projeto', ctaUrl: 'https://wa.me/5511966445533',
+    },
+  ],
+};
+
+function getCompanies(id, name) {
+  return COMPANIES[id] || [{
+    name: 'Especialistas em '+name, logo:'🏢',
+    spec: name, since: 2015,
+    rating: 4.6, reviews: 52, dist: [55,26,12,5,2],
+    badges:[['g','Verificado LinkServ']],
+    contacts:[{icon:'💬',lbl:'WhatsApp LinkServ',val:'(11) 99000-1234'},{icon:'📧',lbl:'E-mail',val:'contato@linkserv.com.br'}],
+    desc: 'Estamos mapeando os melhores escritórios especializados em '+name+' para a sua região. Fale com nossa equipe e fazemos a intermediação diretamente.',
+    cta:'Falar com LinkServ', ctaUrl:'https://wa.me/5511990001234',
+  }];
+}
+
+// ─── RENDER GRID ────────────────────────────────────────────
+let selectedId = null;
+
+function renderGrid() {
+  document.getElementById('service-grid').innerHTML = SERVICES.map(s => `
+    <div class="svc-card${selectedId===s.id?' selected':''}" onclick="pick('${s.id}')">
+      <div class="svc-icon">${s.icon}</div>
+      <div class="svc-name">${s.name}</div>
+      <div class="svc-desc">${s.desc}</div>
+    </div>`).join('');
+}
+
+function pick(id) {
+  selectedId = id;
+  renderGrid();
+  document.getElementById('svc-err').style.display = 'none';
+  scrollToForm();
+}
+function scrollToForm(){ document.getElementById('form-anchor').scrollIntoView({behavior:'smooth'}); }
+
+
+
+// ─── VALIDATION ─────────────────────────────────────────────
+function validate(){
+  let ok=true;
+  [
+    {id:'end', field:'f-end', fn:v=>v.trim().length>4},
+  ].forEach(c=>{
+    const el=document.getElementById(c.field);
+    c.fn(document.getElementById(c.id).value)
+      ? el.classList.remove('invalid')
+      : (el.classList.add('invalid'), ok=false);
+  });
+  if(!selectedId){
+    document.getElementById('svc-err').style.display='block';
+    document.getElementById('service-grid').scrollIntoView({behavior:'smooth'});
+    ok=false;
+  }
+  return ok;
+}
+
+// ─── STAR / BAR HELPERS ─────────────────────────────────────
+function stars(r){
+  let h='';
+  for(let i=1;i<=5;i++){
+    if(r>=i) h+='<span class="star full">★</span>';
+    else if(r>=i-.5) h+='<span class="star half">★</span>';
+    else h+='<span class="star">★</span>';
+  }
+  return h;
+}
+function bars(d){
+  return ['5','4','3','2','1'].map((l,i)=>
+    `<div class="bar-row"><span class="bar-lbl">${l}★</span><div class="bar-track"><div class="bar-fill" style="width:${d[i]}%"></div></div><span class="bar-pct">${d[i]}%</span></div>`
+  ).join('');
+}
+
+// ─── SUBMIT ─────────────────────────────────────────────────
+function handleSubmit(){
+  if(!validate()) return;
+  const svc = SERVICES.find(s=>s.id===selectedId);
+  const cos  = getCompanies(selectedId, svc.name);
+
+  const v = id => document.getElementById(id).value || 'Não informado';
+
+  document.getElementById('r-title').textContent = 'Escritórios para: '+svc.name;
+  document.getElementById('r-sub').textContent   = cos.length+' escritório'+(cos.length>1?'s':'')+' encontrado'+(cos.length>1?'s':'')+' · Rankeados por avaliação técnica';
+  document.getElementById('co-title').textContent = 'Ranking para "'+svc.name+'"';
+
+  document.getElementById('client-card').innerHTML = `
+    <div class="cf"><div class="lbl">Especialidade</div><div class="val">${svc.icon} ${svc.name}</div></div>
+    <div class="cf"><div class="lbl">Local</div><div class="val">${document.getElementById('end').value}</div></div>
+    <div class="cf"><div class="lbl">Tipo de obra</div><div class="val">${v('tipo')}</div></div>
+    <div class="cf"><div class="lbl">Área</div><div class="val">${v('area')}</div></div>
+    <div class="cf"><div class="lbl">Prazo</div><div class="val">${v('prazo')}</div></div>`;
+
+  const rl=['🥇 1º Lugar','🥈 2º Lugar','🥉 3º Lugar'];
+  document.getElementById('co-list').innerHTML = cos.map((c,i) => `
+    <div class="co-card rank-${i+1}">
+      <div class="co-header">
+        ${i<3?`<div class="rank-badge">${rl[i]}</div>`:''}
+        <div class="co-top">
+          <div class="co-logo">${c.logo}</div>
+          <div class="co-meta">
+            <div class="co-name">${c.name}</div>
+            <div class="co-spec">${c.spec}</div>
+            <div class="co-since">No mercado desde ${c.since}</div>
+          </div>
+        </div>
+        <div class="rating-row">
+          <div>
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+              <span class="r-num">${c.rating.toFixed(1)}</span>
+              <div class="stars-wrap">${stars(c.rating)}</div>
+              <span class="r-count">${c.reviews.toLocaleString('pt-BR')} avaliações</span>
+            </div>
+            <div class="badges">${(c.badges||[]).map(([cls,txt])=>`<span class="badge ${cls}">${txt}</span>`).join('')}</div>
+          </div>
+          <div class="bar-group">${bars(c.dist)}</div>
+        </div>
+      </div>
+      <div class="co-contacts">
+        ${c.contacts.map(ct=>`
+          <div class="contact-item">
+            <div class="c-icon">${ct.icon}</div>
+            <div>
+              <div class="c-lbl">${ct.lbl}</div>
+              <div class="c-val">${ct.url?`<a href="${ct.url}" target="_blank">${ct.val}</a>`:ct.val}</div>
+            </div>
+          </div>`).join('')}
+      </div>
+      <div class="co-footer">
+        <p>${c.desc}</p>
+        <div class="cta-wrap">
+          ${c.cta2?`<a class="btn-cta ghost" href="${c.cta2Url}" target="_blank">${c.cta2}</a>`:''}
+          <a class="btn-cta" href="${c.ctaUrl}" target="_blank">${c.cta} ↗</a>
+        </div>
+      </div>
+    </div>`).join('');
+
+  document.getElementById('screen1').classList.add('hidden');
+  const s2 = document.getElementById('screen2');
+  s2.classList.remove('hidden');
+  s2.scrollTop = 0;
+}
+
+function goBack(){
+  document.getElementById('screen2').classList.add('hidden');
+  document.getElementById('screen1').classList.remove('hidden');
+}
+
+renderGrid();
+</script>
+</body>
+</html>
