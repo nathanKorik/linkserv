@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from werkzeug.security import generate_password_hash, check_password_hash
 import mysql.connector
+import os
 
 app = Flask(__name__)
 CORS(app)
@@ -79,4 +80,5 @@ def login():
     return jsonify({"erro": "Email ou senha incorretos"}), 401
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    porta = int(os.environ.get("PORT", 8080))
+    app.run(host="0.0.0.0", port=porta)
