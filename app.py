@@ -5,7 +5,7 @@ import mysql.connector
 import os
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*"}}, methods=["GET", "POST", "OPTIONS"])
 
 def get_db():
     return mysql.connector.connect(
