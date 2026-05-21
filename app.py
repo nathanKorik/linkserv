@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 app = Flask(__name__)
 
 # Configuração de CORS para permitir todas as origens
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 def get_db():
     try:
