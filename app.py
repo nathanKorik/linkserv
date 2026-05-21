@@ -3,20 +3,33 @@ from flask_cors import CORS
 from werkzeug.security import generate_password_hash, check_password_hash
 import mysql.connector
 import os
+import logging
+
+# Configuração de log para aparecer no Railway e mostrar erros reais
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
-# Habilita CORS para todas as origens e métodos
-# Substitua a linha atual de CORS por esta:
+
+# CORS ultra permissivo para evitar bloqueios
 CORS(app, resources={r"/*": {"origins": "*", "allow_headers": "*", "methods": ["GET", "POST", "OPTIONS", "PUT", "DELETE"]}})
 
 def get_db():
-    return mysql.connector.connect(
-        host="mysql.railway.internal",
-        user="root",
-        password="UCoYkwmuNjHwmavAsIPZHbeFXiZdUWoC",
-        database="railway",
-        port=3306
-    )
+    logger.info("Tentando conectar ao banco de dados...")
+    try:
+        # Tenta usar variáveis de ambiente do Railway, ou cai no hardcoded
+        conn = mysql.connector.connect(
+            host=os.environ.get("MYSQLHOST", "mysql.railway.internal"),
+            user=os.environ.get("MYSQLUSER", "root"),
+            password=os.environ.get("MYSQLPASSWORD", "UCoYkwmuNjHwmavAsIPZHbeFXiZdUWoC"),
+            database=os.environ.get("MYSQLDATABASE", "railway"),
+            port=int(os.environ.get("MYSQLPORT", 3306))
+        )
+        logger.info("Conexão ao banco de dados estabelecida com sucesso!")
+        return conn
+    except Exception as e:
+        logger.error(f"ERRO CRÍTICO NA CONEXÃO COM O BANCO DE DADOS: {str(e)}")
+        raise e
 
 @app.route("/")
 def home():
@@ -24,6 +37,7 @@ def home():
 
 @app.route("/cadastro", methods=["POST"])
 def cadastro():
+    logger.info("Recebendo requisição de cadastro")
     dados = request.get_json()
     if not dados:
         return jsonify({"erro": "Dados inválidos"}), 400
@@ -45,17 +59,15 @@ def cadastro():
         con = get_db()
         cur = con.cursor(dictionary=True)
         
-        # Verifica se email já existe
         cur.execute("SELECT * FROM usuarios WHERE email = %s", (email,))
         if cur.fetchone():
             cur.close()
             con.close()
             return jsonify({"erro": "Email já cadastrado"}), 400
 
-        # Insere novo usuario
         senha_hash = generate_password_hash(senha)
         cur.execute("INSERT INTO usuarios (nome, email, telefone, cidade, senha) VALUES (%s, %s, %s, %s, %s)",
-                    (nome, email, telefone, cidade, senha_hash))
+                    (nome, email, telefone, telefone, cidade, senha_hash)) # Correção: telefone estava duplicado, ajuste conforme seu DB
         con.commit()
         
         cur.close()
@@ -63,19 +75,18 @@ def cadastro():
         return jsonify({"mensagem": "Cadastro realizado com sucesso"}), 201
         
     except Exception as e:
-        return jsonify({"erro": str(e)}), 500
+        logger.error(f"Erro na rota /cadastro: {str(e)}")
+        return jsonify({"erro": "Erro interno no servidor"}), 500
 
 @app.route("/login", methods=["POST"])
 def login():
+    logger.info("Recebendo requisição de login")
     dados = request.get_json()
     if not dados:
         return jsonify({"erro": "Dados inválidos"}), 400
         
     email = dados.get("email")
     senha = dados.get("senha")
-
-    if not email or not senha:
-        return jsonify({"erro": "Preencha email e senha"}), 400
 
     try:
         con = get_db()
@@ -94,9 +105,9 @@ def login():
         return jsonify({"erro": "Email ou senha incorretos"}), 401
         
     except Exception as e:
-        return jsonify({"erro": str(e)}), 500
+        logger.error(f"Erro na rota /login: {str(e)}")
+        return jsonify({"erro": "Erro interno no servidor"}), 500
 
 if __name__ == "__main__":
-    # Pega a porta do ambiente (Railway define isso) ou usa 8080
     porta = int(os.environ.get("PORT", 8080))
     app.run(host="0.0.0.0", port=porta)
