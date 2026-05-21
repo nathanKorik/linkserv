@@ -6,7 +6,8 @@ import os
 
 app = Flask(__name__)
 # Habilita CORS para todas as origens e métodos
-CORS(app, resources={r"/*": {"origins": "*"}})
+# Substitua a linha atual de CORS por esta:
+CORS(app, resources={r"/*": {"origins": "*", "allow_headers": "*", "methods": ["GET", "POST", "OPTIONS", "PUT", "DELETE"]}})
 
 def get_db():
     return mysql.connector.connect(
