@@ -3,8 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <title>Cadastro</title>
-  
-
   <style>
     body {
       margin: 0;
@@ -15,138 +13,185 @@
       justify-content: center;
       align-items: center;
     }
-
     .cadastro-container {
       background: white;
       width: 380px;
       padding: 35px;
       border-radius: 12px;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.12);
+      box-shadow: 0 0 20px rgba(0,0,0,0.12);
       text-align: center;
     }
-
-    .cadastro-container h1 {
-      margin-bottom: 10px;
-      color: #1f2937;
-    }
-
-    .cadastro-container p {
-      color: #6b7280;
-      margin-bottom: 25px;
-    }
-
+    .cadastro-container h1 { margin-bottom: 10px; color: #1f2937; }
+    .cadastro-container p { color: #6b7280; margin-bottom: 25px; }
     .cadastro-container input {
-      width: 100%;
-      padding: 12px;
-      margin-bottom: 15px;
-      border: 1px solid #d1d5db;
-      border-radius: 8px;
-      font-size: 15px;
-      box-sizing: border-box;
+      width: 100%; padding: 12px; margin-bottom: 15px;
+      border: 1px solid #d1d5db; border-radius: 8px;
+      font-size: 15px; box-sizing: border-box;
     }
-
     .cadastro-container button {
-      width: 100%;
-      padding: 12px;
-      background: #2563eb;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      cursor: pointer;
-      font-weight: bold;
+      width: 100%; padding: 12px; background: #2563eb;
+      color: white; border: none; border-radius: 8px;
+      font-size: 16px; cursor: pointer; font-weight: bold;
     }
-
-    .cadastro-container button:hover {
-      background: #1d4ed8;
-    }
-
-    #mensagem {
-      margin-top: 15px;
-      font-weight: bold;
-    }
-
-    .login-link {
-      margin-top: 20px;
-      font-size: 14px;
-    }
-
-    .login-link a {
-      color: #2563eb;
-      text-decoration: none;
-      font-weight: bold;
-    }
+    .cadastro-container button:hover { background: #1d4ed8; }
+    #mensagem { margin-top: 15px; font-weight: bold; }
+    .login-link { margin-top: 20px; font-size: 14px; }
+    .login-link a { color: #2563eb; text-decoration: none; font-weight: bold; }
   </style>
 </head>
-
 <body>
-  
-
   <div class="cadastro-container">
-  <h1>Criar conta</h1>
-  <p>Cadastre-se para acessar o sistema</p>
-
-  <form id="formCadastro">
-    <input type="text" id="nome" placeholder="Nome completo" required>
-    <input type="email" id="email" placeholder="Email" required>
-    <input type="text" id="telefone" placeholder="Telefone / WhatsApp" required>
-    <input type="text" id="cidade" placeholder="Cidade" required>
-    <input type="password" id="senha" placeholder="Senha" required>
-    <input type="password" id="confirmarSenha" placeholder="Confirmar senha" required>
-    <button type="submit">Cadastrar</button>
-  </form>
-
-  <p id="mensagem"></p>
-
-  <div class="login-link">
-    Já tem conta? <a href="login.html">Fazer login</a>
+    <h1>Criar conta</h1>
+    <p>Cadastre-se para acessar o sistema</p>
+    <form id="formCadastro">
+      <input type="text" id="nome" placeholder="Nome completo" required>
+      <input type="email" id="email" placeholder="Email" required>
+      <input type="text" id="telefone" placeholder="Telefone / WhatsApp" required>
+      <input type="text" id="cidade" placeholder="Cidade" required>
+      <input type="password" id="senha" placeholder="Senha" required>
+      <input type="password" id="confirmarSenha" placeholder="Confirmar senha" required>
+      <button type="submit">Cadastrar</button>
+    </form>
+    <p id="mensagem"></p>
+    <div class="login-link">
+      Já tem conta? <a href="login.html">Fazer login</a>
+    </div>
   </div>
-</div>
 
   <script>
     const form = document.getElementById("formCadastro");
-const mensagem = document.getElementById("mensagem");
+    const mensagem = document.getElementById("mensagem");
 
-form.addEventListener("submit", async function(event) {
-  event.preventDefault();
+    form.addEventListener("submit", async function(event) {
+      event.preventDefault();
 
-  const nome = document.getElementById("nome").value;
-  const email = document.getElementById("email").value;
-  const telefone = document.getElementById("telefone").value;
-  const cidade = document.getElementById("cidade").value;
-  const senha = document.getElementById("senha").value;
-  const confirmarSenha = document.getElementById("confirmarSenha").value;
+      const nome = document.getElementById("nome").value;
+      const email = document.getElementById("email").value;
+      const telefone = document.getElementById("telefone").value;
+      const cidade = document.getElementById("cidade").value;
+      const senha = document.getElementById("senha").value;
+      const confirmarSenha = document.getElementById("confirmarSenha").value;
 
-  const resposta = await fetch("http://localhost:5000/cadastro", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      nome: nome,
-      email: email,
-      telefone: telefone,
-      cidade: cidade,
-      senha: senha,
-      confirmar_senha: confirmarSenha
-    })
-  });
+      try {
+        const resposta = await fetch("https://linkserv-production.up.railway.app/cadastro", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ nome, email, telefone, cidade, senha, confirmar_senha: confirmarSenha })
+        });
 
-  const dados = await resposta.json();
+        const dados = await resposta.json();
 
-  if (resposta.ok) {
-    mensagem.style.color = "green";
-    mensagem.textContent = "Cadastro realizado com sucesso!";
-
-    setTimeout(() => {
-      window.location.href = "login.html";
-    }, 1000);
-  } else {
-    mensagem.style.color = "red";
-    mensagem.textContent = dados.erro;
-  }
-});
+        if (resposta.ok) {
+          mensagem.style.color = "green";
+          mensagem.textContent = "Cadastro realizado com sucesso!";
+          setTimeout(() => { window.location.href = "login.html"; }, 1000);
+        } else {
+          mensagem.style.color = "red";
+          mensagem.textContent = dados.erro;
+        }
+      } catch (erro) {
+        mensagem.style.color = "red";
+        mensagem.textContent = "Erro ao conectar com o servidor.";
+      }
+    });
   </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Cadastro</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f2f4f8;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .cadastro-container {
+      background: white;
+      width: 380px;
+      padding: 35px;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.12);
+      text-align: center;
+    }
+    .cadastro-container h1 { margin-bottom: 10px; color: #1f2937; }
+    .cadastro-container p { color: #6b7280; margin-bottom: 25px; }
+    .cadastro-container input {
+      width: 100%; padding: 12px; margin-bottom: 15px;
+      border: 1px solid #d1d5db; border-radius: 8px;
+      font-size: 15px; box-sizing: border-box;
+    }
+    .cadastro-container button {
+      width: 100%; padding: 12px; background: #2563eb;
+      color: white; border: none; border-radius: 8px;
+      font-size: 16px; cursor: pointer; font-weight: bold;
+    }
+    .cadastro-container button:hover { background: #1d4ed8; }
+    #mensagem { margin-top: 15px; font-weight: bold; }
+    .login-link { margin-top: 20px; font-size: 14px; }
+    .login-link a { color: #2563eb; text-decoration: none; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <div class="cadastro-container">
+    <h1>Criar conta</h1>
+    <p>Cadastre-se para acessar o sistema</p>
+    <form id="formCadastro">
+      <input type="text" id="nome" placeholder="Nome completo" required>
+      <input type="email" id="email" placeholder="Email" required>
+      <input type="text" id="telefone" placeholder="Telefone / WhatsApp" required>
+      <input type="text" id="cidade" placeholder="Cidade" required>
+      <input type="password" id="senha" placeholder="Senha" required>
+      <input type="password" id="confirmarSenha" placeholder="Confirmar senha" required>
+      <button type="submit">Cadastrar</button>
+    </form>
+    <p id="mensagem"></p>
+    <div class="login-link">
+      Já tem conta? <a href="login.html">Fazer login</a>
+    </div>
+  </div>
 
+  <script>
+    const form = document.getElementById("formCadastro");
+    const mensagem = document.getElementById("mensagem");
+
+    form.addEventListener("submit", async function(event) {
+      event.preventDefault();
+
+      const nome = document.getElementById("nome").value;
+      const email = document.getElementById("email").value;
+      const telefone = document.getElementById("telefone").value;
+      const cidade = document.getElementById("cidade").value;
+      const senha = document.getElementById("senha").value;
+      const confirmarSenha = document.getElementById("confirmarSenha").value;
+
+      try {
+        const resposta = await fetch("https://linkserv-production.up.railway.app/cadastro", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ nome, email, telefone, cidade, senha, confirmar_senha: confirmarSenha })
+        });
+
+        const dados = await resposta.json();
+
+        if (resposta.ok) {
+          mensagem.style.color = "green";
+          mensagem.textContent = "Cadastro realizado com sucesso!";
+          setTimeout(() => { window.location.href = "login.html"; }, 1000);
+        } else {
+          mensagem.style.color = "red";
+          mensagem.textContent = dados.erro;
+        }
+      } catch (erro) {
+        mensagem.style.color = "red";
+        mensagem.textContent = "Erro ao conectar com o servidor.";
+      }
+    });
+  </script>
 </body>
 </html>
