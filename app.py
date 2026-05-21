@@ -5,7 +5,7 @@ import mysql.connector
 import os
 
 app = Flask(__name__)
-# Configuração robusta do CORS (substitui o after_request manual)
+# Habilita CORS para todas as origens e métodos
 CORS(app, resources={r"/*": {"origins": "*"}})
 
 def get_db():
@@ -19,7 +19,7 @@ def get_db():
 
 @app.route("/")
 def home():
-    return jsonify({"mensagem": "Backend funcionando"})
+    return jsonify({"mensagem": "Backend rodando corretamente"})
 
 @app.route("/cadastro", methods=["POST"])
 def cadastro():
@@ -36,25 +36,31 @@ def cadastro():
 
     if not all([nome, email, telefone, cidade, senha, confirmar_senha]):
         return jsonify({"erro": "Preencha todos os campos"}), 400
+    
     if senha != confirmar_senha:
         return jsonify({"erro": "As senhas não são iguais"}), 400
 
     try:
         con = get_db()
         cur = con.cursor(dictionary=True)
+        
+        # Verifica se email já existe
         cur.execute("SELECT * FROM usuarios WHERE email = %s", (email,))
         if cur.fetchone():
             cur.close()
             con.close()
             return jsonify({"erro": "Email já cadastrado"}), 400
 
-        senha_criptografada = generate_password_hash(senha)
+        # Insere novo usuario
+        senha_hash = generate_password_hash(senha)
         cur.execute("INSERT INTO usuarios (nome, email, telefone, cidade, senha) VALUES (%s, %s, %s, %s, %s)",
-                    (nome, email, telefone, cidade, senha_criptografada))
+                    (nome, email, telefone, cidade, senha_hash))
         con.commit()
+        
         cur.close()
         con.close()
         return jsonify({"mensagem": "Cadastro realizado com sucesso"}), 201
+        
     except Exception as e:
         return jsonify({"erro": str(e)}), 500
 
@@ -83,10 +89,13 @@ def login():
                 "mensagem": "Login realizado com sucesso",
                 "usuario": {"nome": usuario["nome"], "email": usuario["email"]}
             }), 200
+        
         return jsonify({"erro": "Email ou senha incorretos"}), 401
+        
     except Exception as e:
         return jsonify({"erro": str(e)}), 500
 
 if __name__ == "__main__":
+    # Pega a porta do ambiente (Railway define isso) ou usa 8080
     porta = int(os.environ.get("PORT", 8080))
     app.run(host="0.0.0.0", port=porta)
