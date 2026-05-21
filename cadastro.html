@@ -57,37 +57,44 @@
       Já tem conta? <a href="login.html">Fazer login</a>
     </div>
   </div>
+
   <script>
     const form = document.getElementById("formCadastro");
     const mensagem = document.getElementById("mensagem");
 
     form.addEventListener("submit", async function(event) {
       event.preventDefault();
-      const nome = document.getElementById("nome").value;
-      const email = document.getElementById("email").value;
-      const telefone = document.getElementById("telefone").value;
-      const cidade = document.getElementById("cidade").value;
-      const senha = document.getElementById("senha").value;
-      const confirmarSenha = document.getElementById("confirmarSenha").value;
+      
+      const dados = {
+        nome: document.getElementById("nome").value,
+        email: document.getElementById("email").value,
+        telefone: document.getElementById("telefone").value,
+        cidade: document.getElementById("cidade").value,
+        senha: document.getElementById("senha").value,
+        confirmar_senha: document.getElementById("confirmarSenha").value
+      };
 
       try {
         const resposta = await fetch("https://linkserv-production.up.railway.app/cadastro", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ nome, email, telefone, cidade, senha, confirmar_senha: confirmarSenha })
+          body: JSON.stringify(dados)
         });
-        const dados = await resposta.json();
+
+        const resultado = await resposta.json();
+
         if (resposta.ok) {
           mensagem.style.color = "green";
           mensagem.textContent = "Cadastro realizado com sucesso!";
-          setTimeout(() => { window.location.href = "login.html"; }, 1000);
+          setTimeout(() => { window.location.href = "login.html"; }, 1500);
         } else {
           mensagem.style.color = "red";
-          mensagem.textContent = dados.erro;
+          mensagem.textContent = resultado.erro || "Erro desconhecido";
         }
       } catch (erro) {
         mensagem.style.color = "red";
         mensagem.textContent = "Erro ao conectar com o servidor.";
+        console.error("Erro:", erro);
       }
     });
   </script>
